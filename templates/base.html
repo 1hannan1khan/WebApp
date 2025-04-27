@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{%block title%}Retro Reboot{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="retro-container">
+
+        <div class="scanlines"></div>
+
+
+            <nav class="navbar">
+                <div class="nav-content">
+                    <div class="logo">
+                        <a href="{{ url_for('galleryPage') }}">
+                            <span class="retro-logo">Retro Reboot</span>
+                        </a>
+                    </div>
+                    <div class="nav-links">
+                        <a href="{{ url_for('galleryPage') }}">Home</a>
+                        <a href="{{ url_for('galleryPage') }}#games">Games</a>
+                        <a href="#" class="about-link">About</a>
+                        <a href="#" class="contact-link">Contact</a>
+                    </div>
+                    <div class="cart-icon">
+                        <a href="{{ url_for('viewCart') }}" class="cart-button">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count">{{ cart_count }}</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash-messages">{{ message }}</div> 
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main>{% block content %}{% endblock %}</main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Retro Reboot</h3>
+                    <p>Your one-stop shop for classic gaming nostalgia</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="{{ url_for('galleryPage') }}">Home</a></li>
+                        <li><a href="{{ url_for('galleryPage') }}#games">Games</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2025 Retro Reboot. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static',filename='script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cart - Retro Reboot{% endblock %}
+
+{% block content %}
+    <section class="cart-section">
+        <div class="container">
+            <div class="section-header">
+                <h1>Your Shopping Cart</h1>
+                <div class="pixel-divider"></div>
+            </div>
+
+            {% if cart_items %}
+                <div class="cart-container">
+                    <div class="cart-items">
+                        {% for item in cart_items %}
+                            <div class="cart-item">
+                                <div class="cart-item-image">
+                                    <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}">
+                                </div>
+                                <div class="cart-item-details">
+                                    <h3>{{ item.name }}</h3>
+                                    <p class="item-price">{{ item.price }}</p>
+                                </div>
+                                <div class="cart-item-quantity">
+                                    <form action="{{ url_for('updateCart') }}" method="post" class="quantity-form">
+                                        <input type="hidden" name="game_id" value="{{ item.id }}">
+                                        <div class="quantity-control">
+                                            <button class="quantity-btn-minus" type="button" data-id="{{ item.id }}">-</button>
+                                            <input type="numer" class="quantity-input" name="quantity" value="{{ item.quantity }}" min="1" max="10">
+                                            <button class="quantity-btn-plus" type="button" data-id="{{ item.id }}">+</button>
+                                        </div>
+                                        <button class="update-btn" type="submit">Update</button>
+                                    </form>
+                                </div>
+                                <div class="cart-item-subtotal">
+                                    <p>{{ item.subtotal }}</p>
+                                </div>
+                                <div class="cart-item-remove">
+                                    <a href="{{ url_for('removeFromCart', gameId=item.id) }}" class="remove-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="cart-summary">
+                        <div class="cart-totals">
+                            <div class="total-row">
+                                <span class="total-label">Subtotal: </span>
+                                <span class="total-value">{{ value }}</span>
+                            </div>
+                            <div class="total-row">
+                                <span class="total-label">Shipping:</span>
+                                <span class="total-value">Free</span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <span class="total-label">Total:</span>
+                                <span class="total-value">{{ total }}</span>
+                            </div>
+                        </div>
+
+                        <div class="cart-actions">
+                            <a href="{{ url_for('galleryPage') }}" class="continue-shopping">
+                                <i class="fas fa-arrow-left"></i>Continue Shopping
+                            </a>
+                            <a href="{{ url_for('checkout') }}" class="checkout-btn">
+                                Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const minusBtns = document.querySelectorAll('.quantity-btn.minus')
+        const plusBtns = document.querySelectorAll('.quantity-btn.plus')
+        const quantityInputs = document.querySelectorAll('.quantity-input')
+
+        minusBtns.forEach(btn => {
+            btn.addEventListener('click', function(){
+                const id = this.dataset.id;
+                const input = document.querySelector(`.quantity-input[data-id="${id}"]`);
+                let currentVal = parseInt(input.value);
+                if (currentVal > 1){
+                    input.value = currentVal - 1;
+                }
+            });
+        });
+
+        plusBtn.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const input = document.querySelector(`.quantity-input[data-id="${id}"]`);
+                let currentVal = parseInt(input.value);
+                if (currentVal < 10){
+                    input.value = currentVal + 1;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

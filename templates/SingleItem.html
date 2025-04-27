@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.name }} - Retro Reboot{% endblock %}
+
+{% block content %}
+    <section class="game-detail">
+        <div class="container">
+            <div class="game-detail-grid">
+
+                <div class="game-detail-image">
+                    <div class="console-frame">
+                        <img src="{{ url_for('static',filename='images/' + game.image) }}" alt="{{ game.name }}">
+                    </div>
+                </div>
+
+                <div class="game-detail-info">
+                    <div class="platform-badge {{ game.platform.lower() }}">{{ game.platform }}</div>
+                    <h1 class="game-title">{{ game.name }}</h1>
+
+                    <div class="game-meta">
+                        <div class="price-box">
+                            <span class="price-label">Price:</span>
+                            <span class="price-value">{{ game.price }}</span>
+                        </div>
+
+                        <div class="eco-impact">
+                            <span class="impact-label">Eco Impact:</span>
+                            <span class="impact-value">{{ game.impact }}</span>
+                        </div>
+                    </div>
+
+                    <div class="game-description">
+                        <h3>Description</h3>
+                        <p>{{ game.description }}</p>
+                    </div>
+                    
+                    <div class="cart-actions">
+                        <form action="{{ url_for('addToCart') }}" method="post" class="add-to-cart-form">
+                            <input type="hidden" name="game_id" value="{{ game.id }}">
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus">-</button>
+                                <input type="number" name="quantity" value="1" min="1" max="10" class="quantity-input">
+                                <button type="button" class="quantity-btn plus">+</button>
+                            </div>
+                            <button type="submit" class="add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="pixel-divider"></div>
+
+                    <div class="additional-details">
+                        <div class="detail-item">
+                            <i class="fas fa-microchip"></i>
+                            <span>Platform: {{ game.platform }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-leaf"></i>
+                            <span>Eco Rating: {{ game.impact.split(' - ')[0] }}/10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="related-games">
+        <div class="container">
+            <div class="section-header">
+                <h2>More {{ game.platform }} Games</h2>
+                <div class="pixel-divider"></div>
+            </div>
+            
+            <div class="related-games-grid">
+                {% for related in related_games %}
+                <div class="related-game-card">
+                    <a href="{{ url_for('singleProductPage', gameId=related.id) }}">
+                        <div class="related-game-image">
+                            <img src="{{ url_for('static', filename='images/' + related.image) }}" alt="{{ related.name }}">
+                        </div>
+                        <div class="related-game-info">
+                            <h3>{{ related.name }}</h3>
+                            <div class="related-game-meta">
+                                <span class="related-game-price">{{ related.price }}</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const minusBtn = document.querySelector('.quantity-btn.minus');
+        const plusBtn = document.querySelector('.quantity-btn.plus');
+        const quantityInput = document.querySelector('.quantity-input');
+        
+        minusBtn.addEventListener('click', function() {
+            let currentVal = parseInt(quantityInput.value);
+            if (currentVal > 1) {
+                quantityInput.value = currentVal - 1;
+            }
+        });
+        
+        plusBtn.addEventListener('click', function() {
+            let currentVal = parseInt(quantityInput.value);
+            if (currentVal < 10) {
+                quantityInput.value = currentVal + 1;
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Retro Reboot - Classic Games{% endblock %}
+
+{% block content %}
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="glitch" data-text="Play the Past, Relive the Magic">Play the Past, Relive the Magic</h1>
+                <p>Discover classic retro games from all you favourite consoles at amazing prices</p>
+                <a href="#games" class="cta">Browse Games</a>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static',filename='images/' + 'retro-hero.png') }}" alt="Retro Gaming Console">
+            </div>
+        </div>
+    </section>
+
+    <section class="platforms">
+        <div class="platform-icons">
+            <div class="platform-icon">
+                <img src="{{ url_for('static',filename='images/' + 'nes.png') }}" alt="NES">
+                <span>NES</span>
+            </div>
+            <div class="platform-icon">
+                <img src="{{ url_for('static',filename='images/' + 'snes.png') }}" alt="SNES">
+                <span>SNES</span>
+            </div>
+            <div class="platform-icon">
+                <img src="{{ url_for('static',filename='images/' + 'ps.png') }}" alt="PlayStation">
+                <span>PlayStation</span>
+            </div>
+            <div class="platform-icon">
+                <img src="{{ url_for('static',filename='images/' + 'genesis.png') }}" alt="Genesis">
+                <span>Genesis</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="games" class="games-section">
+        <div class="section-header">
+            <h2>Featured Games</h2>
+            <div class="pixel-divider"></div>
+        </div>
+
+        <div class="container">
+            <div class="sidebar">
+                <div class="filter-panel">
+                    <h3>Filter Games</h3>
+                    <div class="filters">
+                        <div class="filter">
+                            <label for="searchInput">Search:</label>
+                            <input type="text" id="searchInput" placeholder="Search games...">
+                        </div>
+                        <div class="filter">
+                            <label for="platformFilter">Platform</label>
+                            <select id="platformFilter">
+                                <option value="">All platforms</option>
+                                <option value="NES">NES</option>
+                                <option value="SNES">SNES</option>
+                                <option value="PlayStation">PlayStation</option>
+                                <option value="Genesis">Genesis</option>
+                            </select>
+                        </div>
+                        <div class="filter">
+                            <label for="sortBy">Sort by:</label>
+                            <select id="sortBy">
+                                <option value="name-asc">Name: A-Z</option>
+                                <option value="name-desc">Name: Z-A</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="eco-rating-guide">
+                    <h3>Eco Impact Rating</h3>
+                    <div class="rating-item">
+                        <span class="rating-score">1-3</span>
+                        <span class="rating-desc">Low environmental impact</span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-score">4-7</span>
+                        <span class="rating-desc">Moderate environmental impact</span>
+                    </div>
+                    <div class="rating-item">
+                        <span class="rating-score">8-10</span>
+                        <span class="rating-desc">High environmental impact</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery">
+                {% for game in games %}
+                <div class="game-card" data-platform="{{ game.platform }}" data-price="{{ game.price|replace('£', '') }}">
+                    <a href="{{ url_for('singleProductPage', gameId=game.id) }}">
+                        <div class="gameboy-shell">
+                            <img class="screen-image" src="{{ url_for('static', filename='images/' + game.image) }}" alt="{{ game.name }}">
+                        </div>
+                        <div class="game-info">
+                            <h3>{{ game.name }}</h3>
+                            <div class="game-meta">
+                                <span class="game-price">{{ game.price }}</span>
+                                <span class="game-platform">{{ game.platform }}</span>
+                            </div>
+                            <div class="eco-rating">
+                                Impact Rating: {{ game.impact.split(' – ')[0] }}
+                            </div>
+                        </div>
+                    </a>
+                    <div class="quick-add">
+                        <form action="{{ url_for('addToCart') }}" method="post">
+                            <input type="hidden" name="game_id" value="{{ game.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="quick-cart-btn">
+                                <i class="fas fa-cart-plus"></i> Quick Add
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="nostalgia-cta">
+        <div class="cta-content">
+            <h2>Relive your Gaming Childhood</h2>
+            <p>Subscribe to our newsletter for exclusive retro game deals and news.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Your email address">
+                <button type="submit" class="cta-button">Subcribe</button>
+            </form>
+        </div>
+    </section>
+    {% endblock %}
+
+    {% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+        const sortSelect = document.getElementById('sortBy');
+        const searchInput = document.getElementById('searchInput');
+        const platformFilter = document.getElementById('platformFilter');
+        const gameCards = Array.from(document.querySelectorAll('.game-card'));
+        
+        searchInput.addEventListener('input', filterGames);
+        platformFilter.addEventListener('change', filterGames);
+        sortSelect.addEventListener('change', sortGames);
+
+        function filterGames(){
+            const searchValue = searchInput.value.toLowerCase();
+            const platformValue = platformFilter.value.toLowerCase();
+
+            gameCards.forEach(function(card){
+                const name = card.querySelector('h3').textContent.toLowerCase();
+                const platform = card.dataset.platform.toLowerCase();
+                const matchesSearch = name.includes(searchValue);
+                const matchesPlatform = platformValue ? platform === platformValue : true;
+
+                if (matchesSearch && matchesPlatform) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function sortGames(){
+            const sortType = sortSelect.value;
+
+            gameCards.sort(function(a, b){
+                const aName = a.querySelector('h3').textContent;
+                const bName = b.querySelector('h3').textContent;
+                const aPrice = parseFloat(a.dataset.price);
+                const bPrice = parseFloat(b.dataset.price);
+
+                if (sortType === 'name-asc') {
+                    return aName.localeCompare(bName);
+                } else if (sortType === 'name-desc') {
+                    return bName.localeCompare(aName);
+                } else if (sortType === 'price-asc') {
+                    return aPrice - bPrice;
+                } else if (sortType === 'price-desc') {
+                    return bPrice - aPrice;
+                }
+            });
+
+            const gallery = document.querySelector('.gallery');
+            gallery.innerHTML = '';
+            gameCards.forEach(function(card){
+                gallery.appendChild(card);
+            });
+        }
+    });
+    </script>
+    {% endblock %}
