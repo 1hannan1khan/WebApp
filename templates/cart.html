@@ -26,9 +26,9 @@
                                     <form action="{{ url_for('updateCart') }}" method="post" class="quantity-form">
                                         <input type="hidden" name="game_id" value="{{ item.id }}">
                                         <div class="quantity-control">
-                                            <button class="quantity-btn-minus" type="button" data-id="{{ item.id }}">-</button>
-                                            <input type="numer" class="quantity-input" name="quantity" value="{{ item.quantity }}" min="1" max="10">
-                                            <button class="quantity-btn-plus" type="button" data-id="{{ item.id }}">+</button>
+                                            <button class="quantity-btn minus" type="button" data-id="{{ item.id }}">-</button>
+                                            <input type="number" class="quantity-input" name="quantity" value="{{ item.quantity }}" min="1" max="10" data-id="{{ item.id }}">
+                                            <button class="quantity-btn plus" type="button" data-id="{{ item.id }}">+</button>
                                         </div>
                                         <button class="update-btn" type="submit">Update</button>
                                     </form>
@@ -79,9 +79,9 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function(){
-        const minusBtns = document.querySelectorAll('.quantity-btn.minus')
-        const plusBtns = document.querySelectorAll('.quantity-btn.plus')
-        const quantityInputs = document.querySelectorAll('.quantity-input')
+        const minusBtns = document.querySelectorAll('.quantity-btn.minus');
+        const plusBtns = document.querySelectorAll('.quantity-btn.plus');
+        const quantityInputs = document.querySelectorAll('.quantity-input');
 
         minusBtns.forEach(btn => {
             btn.addEventListener('click', function(){
@@ -94,7 +94,7 @@
             });
         });
 
-        plusBtn.forEach(btn => {
+        plusBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.dataset.id;
                 const input = document.querySelector(`.quantity-input[data-id="${id}"]`);

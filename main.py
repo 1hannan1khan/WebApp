@@ -1,11 +1,15 @@
 from flask import Flask, render_template, redirect, url_for, session, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.sqlite3'
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
 db = SQLAlchemy(app)
 
 class Game(db.Model):
@@ -26,7 +30,7 @@ class Game(db.Model):
             'price_numeric': float(self.price.replace('£','')),
             'description': self.description,
             'image': self.image,
-            'imapct': self.impact,
+            'impact': self.impact,
             'platform': self.platform
         }
     
@@ -86,7 +90,7 @@ def viewCart():
 @app.route('/add-to-cart', methods=['POST'])
 def addToCart():
     game_id = request.form.get('game_id', type=int)
-    quantity = request.form.get('quantity_id',1,type=int)
+    quantity = request.form.get('quantity',1,type=int)
 
     if not game_id:
         return jsonify({'error': 'Invalid game ID'}), 400
